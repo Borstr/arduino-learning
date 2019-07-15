@@ -1,21 +1,12 @@
+const express = require('express');
+const socketIO = require('socket.io');
 const five = require("johnny-five");
+
 const board = new five.Board();
+const app = express();
 
-board.on("ready", function() {
-  var gyro = new five.Gyro({
-    controller: "MPU6050"
-  });
+app.set('view engine', 'ejs');
 
-  gyro.on("change", function() {
-    console.log("gyro");
-    console.log("  x            : ", this.x);
-    console.log("  y            : ", this.y);
-    console.log("  z            : ", this.z);
-    console.log("  pitch        : ", this.pitch);
-    console.log("  roll         : ", this.roll);
-    console.log("  yaw          : ", this.yaw);
-    console.log("  rate         : ", this.rate);
-    console.log("  isCalibrated : ", this.isCalibrated);
-    console.log("--------------------------------------");
-  });
-});
+app.get('/', (req, res) => res.render('pages/index'));
+
+app.listen(8080, () => console.log('Server Listening on port 8080.'));
