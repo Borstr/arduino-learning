@@ -21,6 +21,7 @@ board.on('ready', () => {
   const ledBlue = five.Led(6);
   const ledYellow = five.Led(5);
   const ledGreen = five.Led(8);
+  const servo = five.Servo(10);
   
   app.get('/led/:type', (req, res) => {
     console.log(req.params.type)
@@ -30,6 +31,12 @@ board.on('ready', () => {
       case 'green': switchLed(ledGreen, ledState, 'green'); res.send('ok'); break;
       case 'yellow': switchLed(ledYellow, ledState, 'yellow'); res.send('ok'); break;
     }
+  });
+
+  app.get('/servo/:angle', (req, res) => {
+    console.log(req.params.angle)
+    servo.to(req.params.angle);
+    res.send('ok');
   });
 });
 
