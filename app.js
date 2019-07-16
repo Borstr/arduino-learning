@@ -1,50 +1,104 @@
-const express = require('express');
-const socketIO = require('socket.io');
 const five = require("johnny-five");
 
 const board = new five.Board();
-const app = express();
-
-app.set('view engine', 'ejs');
-
-app.get('/', (req, res) => res.render('pages/index'));
 
 board.on('ready', () => {
-  const ledState = {
-    red: false,
-    blue: false,
-    green: false,
-    yellow: false
-  }
+  let isStarted = false;
+  let timings = [];
+  let start;
+
+  const startBtn = new five.Button(7);
+  const startLed = new five.Led(8);
   
-  const ledRed = five.Led(7);
-  const ledBlue = five.Led(6);
-  const ledYellow = five.Led(5);
-  const ledGreen = five.Led(8);
-  const servo = five.Servo(10);
+  const leds = [
+    new five.Led(10),
+    new five.Led(11),
+    new five.Led(12),
+    new five.Led(13)
+  ];
+
+  const timingBtns = [
+    new five.Button(2),
+    new five.Button(3),
+    new five.Button(4),
+    new five.Button(5)
+  ];
+
+  timingBtns.map((btn, index) => btn.on('down', () => handleTimingButtonDown(index)));
+  timingBtns.map((btn, index) => btn.on('up', () => handleTimingButtonUp(index)));
+
+  startBtn.on('down', handleStartBtnDown);
   
-  app.get('/led/:type', (req, res) => {
-    console.log(req.params.type)
-    switch(req.params.type) {
-      case 'blue': switchLed(ledBlue, ledState, 'blue'); res.send('ok'); break;
-      case 'red': switchLed(ledRed, ledState, 'red'); res.send('ok'); break;
-      case 'green': switchLed(ledGreen, ledState, 'green'); res.send('ok'); break;
-      case 'yellow': switchLed(ledYellow, ledState, 'yellow'); res.send('ok'); break;
+  function handleStartBtnDown() {
+    if(!isStarted) {
+      startLed.on();
+    } else {
+      startLed.off();
+      recreate();
     }
-  });
 
-  app.get('/servo/:angle', (req, res) => {
-    console.log(req.params.angle)
-    servo.to(req.params.angle);
-    res.send('ok');
-  });
+    isStarted = !isStarted;
+  }
+
+  function handleTimingButtonDown(index) {
+    if(isStarted) {
+      if(timings[timings.length - 1] && timings[timings.length - 1].index !== 'break' && start) {
+        leds[index].on();
+
+        timings.push({
+          index: 'break',
+          time: new Date() - start
+        });
+
+        start = new Date();
+      } else {
+        start = new Date();
+        leds[index].on();
+      }
+    }
+  }
+
+  function handleTimingButtonUp(index) {
+    if(isStarted) {
+      const currTime = new Date();
+      
+      timings.push({ 
+        index,
+        time: currTime - start
+      });
+  
+      start = currTime;
+      leds[index].off();
+    }
+  }
+
+  function recreate() {    
+    try {
+      const { index, time } = timings[0];
+      
+      if(index != 'break') {
+        leds[index].on();
+      
+        setTimeout(() => {
+          leds[index].off();
+          timings.shift();
+          recreate();
+        }, time);
+      } else {
+        setTimeout(() => {
+          timings.shift();
+          recreate();
+        }, time);
+      }
+    } catch {
+      for(let i = 0; i < 3; i++) {
+        const j = i;
+        
+        setTimeout(() => {
+          startLed.on();
+          setTimeout(() => startLed.off(), 250 * j + 125);
+        }, 250 * j);
+      }
+    }
+  }
 });
-
-const switchLed = (led, state, field) => {
-  if(state[field]) led.off();
-  else led.on();
-
-  state[field] = !state[field];
-}
-
-app.listen(8080, () => console.log('Server Listening on port 8080.'));
