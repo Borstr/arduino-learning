@@ -5,8 +5,38 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Arduino magic</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+  <style>
+    .container {
+      display: flex;
+      flex-direction: column;
+      max-width: 300px;
+      padding: 40px;
+    }
+
+    .btn {
+      margin: 16px 0;
+    }
+  </style>
 </head>
 <body>
-  
+  <div class="container">
+    <button class="waves-effect waves-light btn blue" id="blue">button</button>
+    <button class="waves-effect waves-light btn red" id="red">button</button>
+    <button class="waves-effect waves-light btn green" id="green">button</button>
+    <button class="waves-effect waves-light btn yellow" id="yellow">button</button>
+  </div>
+  <script>
+    const blueBtn = document.querySelector('#blue');
+    const redBtn = document.querySelector('#red');
+    const greenBtn = document.querySelector('#green');
+    const yellowBtn = document.querySelector('#yellow');
+
+    blueBtn.addEventListener('click', e => fetch('/led/blue'));
+    redBtn.addEventListener('click', e => fetch('/led/red'));
+    greenBtn.addEventListener('click', e => fetch('/led/green'));
+    yellowBtn.addEventListener('click', e => fetch('/led/yellow'));
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.dev.js"></script>
 </body>
 </html>
