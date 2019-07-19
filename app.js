@@ -16,21 +16,21 @@ board.on('ready', () => {
   
   let servoAngle = 0;
   
-  joystick.on('change', handleJoystickChange);
+  joystick.on('data', handleJoystickChange);
 
   function handleJoystickChange() {
     if(this.x > .1) {
-      if(servoAngle < 180) {
-        servoAngle += 180 / 50;
+      if(servoAngle < 179) {
+        servoAngle += 179 / 50;
       }
     } else if(this.x < -.1) {
-      if(servoAngle > 0) {
-        servoAngle -= 180 / 50;
+      if(servoAngle > 1) {
+        servoAngle -= 179 / 50;
       }
     }
 
-    if(servoAngle > 180) servoAngle = 180;
-    if(servoAngle < 0) servoAngle = 0;
+    if(servoAngle > 180) servoAngle = 179;
+    if(servoAngle < 0) servoAngle = 1;
 
     console.log(this.x, servoAngle)
     servo.to(servoAngle);
