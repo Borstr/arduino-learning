@@ -20,7 +20,7 @@ module.exports = function(five) {
     startAt: 0
   });
   
-  const rotatorServo = new five.Servo.Continuous({
+  const middleRotatorServo = new five.Servo.Continuous({
     pin: 6,
     deadband: [73, 95]
   });
@@ -32,7 +32,7 @@ module.exports = function(five) {
     led,
     middleJointServo,
     groundJointServo,
-    rotatorServo,
+    middleRotatorServo,
     joystick
   }
 }
