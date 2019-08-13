@@ -113,7 +113,6 @@ function handleJoystickChange(
   function rotate360DegServo() {
     if((x > .2 || x < -.2) && middleRotatorStart == 0) {
       middleRotatorStart = new Date();
-      console.log(middleRotatorStart, 'start')
     }
 
     if(x > .2) {
@@ -129,10 +128,8 @@ function handleJoystickChange(
     if(x < .1 && x > -.1 && middleRotatorStart != 0) {
       middleRotatorServo.stop();
       middleRotatorEnd = new Date();
-      console.log(middleRotatorEnd, 'end')
       servoTurns.middle.time = middleRotatorEnd - middleRotatorStart;
       middleRotatorStart = 0;
-      console.log(servoTurns.middle.time, 'time');
     }
   }
 }
